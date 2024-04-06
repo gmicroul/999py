@@ -3,7 +3,6 @@ from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 import time
 import re
 
-# Prometheus Pushgateway URL
 PROMETHEUS_GATEWAY = 'http://localhost:9091'
 
 def get_video_info(bvid, retries=3, delay=2):
@@ -45,22 +44,17 @@ def extract_bvid_from_url(url):
         return None
 
 if __name__ == "__main__":
-    update_interval = 15  # Update every 15 seconds
-    urls = {
-        "BV1oN4y1Y7uZ": "https://api.bilibili.com/x/web-interface/view?bvid=BV1oN4y1Y7uZ",
-        "BV1H5411v7ws": "https://api.bilibili.com/x/web-interface/view?bvid=BV1H5411v7ws",
-        "BV1yr42187Qq": "https://api.bilibili.com/x/web-interface/view?bvid=BV1yr42187Qq",
-        "BV1fr421t7cW": "https://api.bilibili.com/x/web-interface/view?bvid=BV1fr421t7cW",
-        "BV1vJ4m177aR": "https://api.bilibili.com/x/web-interface/view?bvid=BV1vJ4m177aR",
-        "BV1ne4y1f72P": "https://api.bilibili.com/x/web-interface/view?bvid=BV1ne4y1f72P",
-        "BV1tD4y167PL": "https://api.bilibili.com/x/web-interface/view?bvid=BV1tD4y167PL",
-        "BV14F411z7gv": "https://api.bilibili.com/x/web-interface/view?bvid=BV14F411z7gv",
-        "BV1TL4y1p7G1": "https://api.bilibili.com/x/web-interface/view?bvid=BV1TL4y1p7G1",
-        "BV14D42157Jh": "https://api.bilibili.com/x/web-interface/view?bvid=BV14D42157Jh"
-        # Add more bvids and URLs here
-    }
-    
+    update_interval = 15
+    urls = {}
+
     while True:
+        with open('urls.txt', 'r') as file:
+            urls.clear()
+            for line in file:
+                parts = line.strip().split()
+                if len(parts) == 2:
+                    urls[parts[0]] = parts[1]
+        
         video_data = {}
         for bvid, url in urls.items():
             view_count, title, duration = get_video_info(bvid)
