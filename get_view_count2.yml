@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Get video view count from Bilibili
+      uri:
+        url: "https://api.bilibili.com/x/web-interface/view?bvid=BV1fr421t7cW"
+        method: GET
+        return_content: yes
+      register: response
+
+    - name: Parse view count from response
+      set_fact:
+        view_count: "{{ response.json.data.stat.view }}"
+
+    - name: Display view count
+      debug:
+        msg: "your 5t postmarketos bili3 https://www.bilibili.com/video/BV1fr421t7cW visit count: {{ view_count }}"
+
