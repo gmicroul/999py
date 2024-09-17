@@ -121,19 +121,28 @@ def extract_bvid_from_url(url):
 
 if __name__ == "__main__":
     # 从文件中读取 Bilibili 视频 URL 和对应的 BVID
-    with open('urls.txt', 'r') as file:
-        urls = {line.strip().split()[1]: line.strip().split()[0] for line in file if line.strip()}
+    update_interval = 15
+    urls = {}
+    
+    while True:
+        with open('urls.txt', 'r') as file:
+            urls = {line.strip().split()[1]: line.strip().split()[0] for line in file if line.strip()}
 
-    video_data = {}
-    for bvid, url in urls.items():
-        view_count, title, duration, aid, cid = get_video_info(bvid)
-        if view_count is not None:
-            video_data[bvid] = (view_count, title, duration, aid, cid)
-            print(f"Successfully fetched info for video with bvid: {bvid}, title: {title}, duration: {duration}")
-        else:
-            print(f"Failed to fetch info for video with bvid: {bvid}")
+        video_data = {}
+        for bvid, url in urls.items():
+            view_count, title, duration, aid, cid = get_video_info(bvid)
+            if view_count is not None:
+                video_data[bvid] = (view_count, title, duration, aid, cid)
+                print(f"Successfully fetched info for video with bvid: {bvid}, title: {title}, duration: {duration}")
+            else:
+                print(f"Failed to fetch info for video with bvid: {bvid}")
 
-    push_to_prometheus(video_data)
-    print(f"Data pushed to Prometheus.")
+        push_to_prometheus(video_data)
+        print(f"Data pushed to Prometheus.")
+
+        print(f"Waiting {update_interval} seconds before next update...")
+        time.sleep(update_interval)
+
+
 
 
